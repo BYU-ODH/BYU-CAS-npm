@@ -56,7 +56,7 @@ module.exports = {
         var t = 'ticket='; // TODO - not the easiest-to-read, or most foolproof, way of getting ticket
         var index = url.indexOf(t);
         if(index === -1) {
-          reject("No ticket returned");
+          reject(Error("No ticket returned"));
           return;
         }
         var ticket = url.slice(url.indexOf(t)+t.length);
@@ -71,7 +71,7 @@ module.exports = {
       };
 
       function _handleCASError(e){
-        reject(e);
+        reject(Error(e));
       };
     });
   },
@@ -99,10 +99,10 @@ module.exports = {
       });
 
       cas.validate(ticket, function(err, status, username) {
-        if (err) {
-          reject({status: false, username: null, error: err});
+        if (err || !status) {
+          reject(Error("Could not validate CAS ticket: " + err));
         } else {
-          resolve({status: status, username: username, error: err});
+          resolve({username: username});
         }
       });
     });

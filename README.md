@@ -23,8 +23,8 @@ var ticket = doSomethingToGetTicket();
 
 cas.validate(ticket).then(function success(response) {
   console.log("Ticket valid! Hello, " + response.username);
-}, function error(response) {
-  console.log("Invalid ticket. Error message was: " + response.error);
+}).catch(function error(e) {
+  console.log("Invalid ticket. Error message was: " + e.message);
 });
 ```
 
