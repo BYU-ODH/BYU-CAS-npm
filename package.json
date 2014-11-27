@@ -1,0 +1,38 @@
+{
+  "name": "byu-cas",
+  "version": "0.0.1",
+  "description": "CAS tools specific to Brigham Young University, Provo",
+  "main": "index.js",
+  "scripts": {
+    "test": "$(npm bin)/mocha -t 5000 test.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BYU-ODH/BYU-CAS-npm.git"
+  },
+  "keywords": [
+    "byu",
+    "cas",
+    "brigham young university",
+    "central authentication service"
+  ],
+  "author": "Ian Hunter <ianhunter@byu.edu>",
+  "contributors": [
+    "Luke Nelson"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BYU-ODH/BYU-CAS-npm/issues"
+  },
+  "homepage": "https://github.com/BYU-ODH/BYU-CAS-npm",
+  "dependencies": {
+    "bluebird": "^2.3.11",
+    "cheerio": "^0.18.0",
+    "fmontmasson-xcas": "git://github.com/Luke1298/xcas.git#62ad75bbf2e21db5129bb4361cc2dc3fb5c0c7ad",
+    "request": "^2.48.0"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^2.0.1"
+  }
+}
