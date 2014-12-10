@@ -12,7 +12,7 @@
  */
 
 var Promise = typeof Promise !== 'undefined' ? Promise : require('bluebird');
-var CAS         = require('fmontmasson-xcas'),
+var CAS         = require('xcas'),
     cheerio     = require('cheerio'),
     request     = require('request'),
     https       = require('https');
@@ -22,7 +22,7 @@ module.exports = {
    * Submits a username and password to BYU's CAS services to retrieve a
    * ticket.
    * @see validate
-   * @return {Promis} fulfilled with a ticket
+   * @return Promise fulfilled with a ticket
    */
   getTicket: function (username, password, service) {
     return new Promise(function(resolve, reject) {
@@ -82,13 +82,6 @@ module.exports = {
    * @param {string} service - Should match the URL passed as a service in the CAS
    *                       query string, e.g., cas.byu.edu/cas/signin?service=example.com
    * @return Promise rejected when the ticket is invalid, resolved otherwise.
-   * Both come back as an object like this:
-   *
-   *    {
-   *      error: (the error message, if any)
-   *      username: (the username, or null if ticket was invalid)
-   *      status: (true if resolved [valid], false if rejected [invalid])
-   *    }
    */
   validate: function(ticket, service) {
     return new Promise(function (resolve, reject) {
@@ -98,15 +91,77 @@ module.exports = {
         version: 2.0
       });
 
-      cas.validate(ticket, function(err, status, username) {
+      cas.validate(ticket, function(err, status, username, details) {
         if (err || !status) {
           reject(Error("Could not validate CAS ticket: " + err));
         } else {
-          resolve({username: username});
+          var attributes = _parseAttributes(details.attributes);
+          resolve({username: username, attributes: attributes});
         }
       });
     });
   }
+};
+
+// converts data in the attributes from all arrays to appropriate types
+function _parseAttributes(attributes) {
+  var BOOLS = [
+    'activeParttimeNonBYUEmployee',
+    'activeParttimeInstructor',
+    'inactiveFulltimeEmployee',
+    'activeFulltimeInstructor',
+    'activeFulltimeNonBYUEmployee',
+    'inactiveParttimeNonBYUEmployee',
+    'organization',
+    'activeEligibletoRegisterStudent',
+    'preferredSurname',
+    'inactiveParttimeInstructor',
+    'inactiveFulltimeNonBYUEmployee',
+    'restricted',
+    'alumni',
+    'inactiveParttimeEmployee',
+    'inactiveFulltimeInstructor',
+    'activeFulltimeEmployee',
+    'activeParttimeEmployee',
+  ];
+  var STRINGS = [
+    'restOfName',
+    'surname',
+    'preferredFirstName',
+    'sortName',
+    'name',
+    'netId',
+    'byuId',
+    'emailAddress',
+    'personId',
+    'fullName'
+  ]
+  var SPLIT_ARRAY = ['memberOf'];
+
+  var new_attrs = {};
+  Object.keys(attributes).forEach(function(key) {
+    if(BOOLS.indexOf(key) !== -1) {
+      new_attrs[key] = (attributes[key][0] == 'true');
+    }
+    else if(STRINGS.indexOf(key) !== -1) {
+      new_attrs[key] = attributes[key][0];
+    }
+    else if(SPLIT_ARRAY.indexOf(key) !== -1) {
+      var val = attributes[key][0];
+      if(val === '') {
+        new_attrs[key] = [];
+      }
+      else
+      {
+        new_attrs[key] = val.split(',');
+      }
+    }
+    else
+    {
+      new_attrs[key] = attributes[key];
+    }
+  });
+  return new_attrs;
 };
 
 // helper function for getTicket

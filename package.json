@@ -1,6 +1,6 @@
 {
   "name": "byu-cas",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "CAS tools specific to Brigham Young University, Provo",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,7 @@
   "dependencies": {
     "bluebird": "^2.3.11",
     "cheerio": "^0.18.0",
-    "fmontmasson-xcas": "git://github.com/Luke1298/xcas.git#62ad75bbf2e21db5129bb4361cc2dc3fb5c0c7ad",
+    "xcas": "BYU-ODH/xcas",
     "request": "^2.48.0"
   },
   "devDependencies": {

@@ -24,9 +24,43 @@ var service = 'http://example.com/signin';
 
 cas.validate(ticket, service).then(function success(response) {
   console.log("Ticket valid! Hello, " + response.username);
+  console.dir(response.attributes);
 }).catch(function error(e) {
   console.log("Invalid ticket. Error message was: " + e.message);
 });
+```
+
+Attributes come back in the following format
+
+```javascript
+{ restOfName: 'Peter Oliver',
+  activeParttimeNonBYUEmployee: false,
+  activeParttimeInstructor: false,
+  inactiveFulltimeEmployee: false,
+  surname: 'Rabbit',
+  activeFulltimeInstructor: false,
+  memberOf: [],
+  preferredFirstName: 'Peter',
+  sortName: 'Rabbit, Peter Oliver',
+  activeFulltimeNonBYUEmployee: false,
+  inactiveParttimeNonBYUEmployee: false,
+  organization: false,
+  activeEligibletoRegisterStudent: false,
+  name: 'Peter Rabbit',
+  preferredSurname: false,
+  personId: '611290592',
+  inactiveParttimeInstructor: false,
+  netId: 'prabbit',
+  inactiveFulltimeNonBYUEmployee: false,
+  byuId: '872643180',
+  restricted: false,
+  emailAddress: 'prabbitbyu@sharklasers.com',
+  alumni: false,
+  inactiveParttimeEmployee: false,
+  inactiveFulltimeInstructor: false,
+  activeFulltimeEmployee: false,
+  fullName: 'Peter Oliver Rabbit IV',
+  activeParttimeEmployee: false }
 ```
 
 ## Contributing
