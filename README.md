@@ -20,8 +20,9 @@ cas.getTicket('username', 'password', service)
 var cas = require('byu-cas');
 
 var ticket = doSomethingToGetTicket();
+var service = 'http://example.com/signin';
 
-cas.validate(ticket).then(function success(response) {
+cas.validate(ticket, service).then(function success(response) {
   console.log("Ticket valid! Hello, " + response.username);
 }).catch(function error(e) {
   console.log("Invalid ticket. Error message was: " + e.message);
