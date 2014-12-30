@@ -31,7 +31,7 @@ module.exports = {
         followRedirect: false
       });
 
-      var url = 'https://cas.byu.edu/cas/login?service=' + service;
+      var url = 'https://cas.byu.edu/cas/login?service=' + encodeURIComponent(service);
       
       var req = r.get(url, function(error, response, body){
         if(error) {
@@ -48,19 +48,26 @@ module.exports = {
             _handleCASError(error);
             return;
           }
-          _extractTicket(response.headers.location);
+          if(response.headers.location === undefined) {
+            // there might be a link to the ticket instead of a redirect. try that
+            var $ = cheerio.load(body);
+            _extractTicket($('a').attr('href'));
+          }
+          else
+          {
+            _extractTicket(response.headers.location);
+          }
         });
       };
 
       function _extractTicket(url) {
-        var t = 'ticket='; // TODO - not the easiest-to-read, or most foolproof, way of getting ticket
-        var index = url.indexOf(t);
-        if(index === -1) {
+        var query = require('url').parse(url, true).query;
+
+        if(!query || query.ticket === undefined) {
           reject(Error("No ticket returned"));
           return;
         }
-        var ticket = url.slice(url.indexOf(t)+t.length);
-        resolve(ticket);
+        resolve(query.ticket);
       };
 
       function _parseHTML(html) {
