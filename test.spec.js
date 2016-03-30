@@ -26,7 +26,7 @@ it('should validate a correct CAS ticket', function(done) {
 it('should retrieve correct ticket when the service has the word "ticket" in it', function(done) {
   var service = "https://ticket.byu.edu/ticket/ticket?sticket=123&tickets=45&auth_ticket=12";
   cas.getTicket(MOCK_USERNAME, MOCK_PASSWORD, service).then(function success(ticket){
-    expect(ticket).to.match(/^ST.*?cas$/);
+    expect(ticket).to.match(/^ST-.*/);
     done();
   });
 });
