@@ -17,77 +17,7 @@ var CAS         = require('xcas'),
     request     = require('request'),
     https       = require('https');
 
-module.exports = {
-  /**
-   * Submits a username and password to BYU's CAS services to retrieve a
-   * ticket.
-   * @see validate
-   * @return Promise fulfilled with a ticket
-   */
-  getTicket: function (username, password, service) {
-    console.warn("POTENTIALLY INSECURE METHOD: getTicket has certain security "
-        + "implications when using user-submitted username and password data. "
-        + "It will be removed by default in version 2.0.0."
-        +" See https://github.com/BYU-ODH/BYU-CAS-npm for more information.");
-
-    return new Promise(function(resolve, reject) {
-      var r = request.defaults({
-        jar: true,
-        followRedirect: false
-      });
-
-      var url = 'https://cas.byu.edu/cas/login?service=' + encodeURIComponent(service);
-      
-      var req = r.get(url, function(error, response, body){
-        if(error) {
-          _handleCASError(error);
-          return;
-        }
-        _handleHTML(body);
-      });
-
-      function _handleHTML(html) {
-        var fields = _parseHTML(html);
-        var req = r.post(url, {form: fields}, function(error, response, body){
-          if(error) {
-            _handleCASError(error);
-            return;
-          }
-          if(response.headers.location === undefined) {
-            // there might be a link to the ticket instead of a redirect. try that
-            var $ = cheerio.load(body);
-            _extractTicket($('a').attr('href'));
-          }
-          else
-          {
-            _extractTicket(response.headers.location);
-          }
-        });
-      };
-
-      function _extractTicket(url) {
-        var query = require('url').parse(url, true).query;
-
-        if(!query || query.ticket === undefined) {
-          reject(Error("No ticket returned"));
-          return;
-        }
-        resolve(query.ticket);
-      };
-
-      function _parseHTML(html) {
-        var fields = _getCASFieldsFromHTML(html);
-        fields.username = username;
-        fields.password = password;
-        return fields;
-      };
-
-      function _handleCASError(e){
-        reject(Error(e));
-      };
-    });
-  },
-
+var byucas = {
   /**
    * Checks whether or not a ticket is valid.
    * @param {string} ticket - The ticket to validate
@@ -186,3 +116,75 @@ function _getCASFieldsFromHTML(html) {
   });
   return fields;
 };
+
+if(process.env.INSECURE) {
+  /**
+   * Submits a username and password to BYU's CAS services to retrieve a
+   * ticket.
+   * @see validate
+   * @return Promise fulfilled with a ticket
+   */
+  byucas.getTicket = function (username, password, service) {
+    console.warn("NOTE: getTicket certain security implications when handling "
+        + "user data. 'validate' should almost always be used instead.");
+
+    return new Promise(function(resolve, reject) {
+      var r = request.defaults({
+        jar: true,
+        followRedirect: false
+      });
+
+      var url = 'https://cas.byu.edu/cas/login?service=' + encodeURIComponent(service);
+      
+      var req = r.get(url, function(error, response, body){
+        if(error) {
+          _handleCASError(error);
+          return;
+        }
+        _handleHTML(body);
+      });
+
+      function _handleHTML(html) {
+        var fields = _parseHTML(html);
+        var req = r.post(url, {form: fields}, function(error, response, body){
+          if(error) {
+            _handleCASError(error);
+            return;
+          }
+          if(response.headers.location === undefined) {
+            // there might be a link to the ticket instead of a redirect. try that
+            var $ = cheerio.load(body);
+            _extractTicket($('a').attr('href'));
+          }
+          else
+          {
+            _extractTicket(response.headers.location);
+          }
+        });
+      };
+
+      function _extractTicket(url) {
+        var query = require('url').parse(url, true).query;
+
+        if(!query || query.ticket === undefined) {
+          reject(Error("No ticket returned"));
+          return;
+        }
+        resolve(query.ticket);
+      };
+
+      function _parseHTML(html) {
+        var fields = _getCASFieldsFromHTML(html);
+        fields.username = username;
+        fields.password = password;
+        return fields;
+      };
+
+      function _handleCASError(e){
+        reject(Error(e));
+      };
+    });
+  };
+}
+
+module.exports = byucas;

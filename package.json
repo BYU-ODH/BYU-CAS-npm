@@ -1,6 +1,6 @@
 {
   "name": "byu-cas",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "CAS tools specific to Brigham Young University, Provo",
   "main": "index.js",
   "scripts": {

@@ -30,3 +30,10 @@ it('should retrieve correct ticket when the service has the word "ticket" in it'
     done();
   });
 });
+
+it('should disable the getTicket method when INSECURE is not set', function() {
+  delete process.env.INSECURE;
+  delete require.cache[require.resolve('./index')];
+  cas = require('./index');
+  expect(cas.getTicket).to.be.undefined;
+});
