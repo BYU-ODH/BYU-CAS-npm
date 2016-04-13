@@ -27,7 +27,7 @@
   "homepage": "https://github.com/BYU-ODH/BYU-CAS-npm",
   "dependencies": {
     "bluebird": "^2.3.11",
-    "cheerio": "^0.18.0",
+    "cheerio": "^0.20.0",
     "xcas": "BYU-ODH/xcas",
     "request": "^2.48.0"
   },
