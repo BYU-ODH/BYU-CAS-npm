@@ -3,18 +3,6 @@ BYU-CAS
 
 ## Examples
 
-### Retrieving a CAS ticket
-
-```javascript
-var cas = require('byu-cas');
-var service = 'http://example.com/signin';
-
-cas.getTicket('username', 'password', service)
-.then(function(ticket){
-  // do something with the ticket
-});
-```
-
 ### Validating a ticket
 ```javascript
 var cas = require('byu-cas');
@@ -27,6 +15,22 @@ cas.validate(ticket, service).then(function success(response) {
   console.dir(response.attributes);
 }).catch(function error(e) {
   console.log("Invalid ticket. Error message was: " + e.message);
+});
+```
+
+### Retrieving a CAS ticket
+
+Note: this is removed in version 2.0.0 except when the environment variable
+`INSECURE` is set. @agrasley has a [good explanation](https://github.com/BYU-ODH/BYU-CAS-npm/issues/2#issue-147802968)
+of the risks involved when using this function.
+
+```javascript
+var cas = require('byu-cas');
+var service = 'http://example.com/signin';
+
+cas.getTicket('username', 'password', service)
+.then(function(ticket){
+  // do something with the ticket
 });
 ```
 

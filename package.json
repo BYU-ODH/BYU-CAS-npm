@@ -4,7 +4,7 @@
   "description": "CAS tools specific to Brigham Young University, Provo",
   "main": "index.js",
   "scripts": {
-    "test": "$(npm bin)/mocha -t 5000 test.spec.js"
+    "test": "INSECURE=true $(npm bin)/mocha -t 5000 test.spec.js"
   },
   "repository": {
     "type": "git",

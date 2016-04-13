@@ -25,6 +25,11 @@ module.exports = {
    * @return Promise fulfilled with a ticket
    */
   getTicket: function (username, password, service) {
+    console.warn("POTENTIALLY INSECURE METHOD: getTicket has certain security "
+        + "implications when using user-submitted username and password data. "
+        + "It will be removed by default in version 2.0.0."
+        +" See https://github.com/BYU-ODH/BYU-CAS-npm for more information.");
+
     return new Promise(function(resolve, reject) {
       var r = request.defaults({
         jar: true,
